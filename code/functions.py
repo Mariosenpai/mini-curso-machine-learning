@@ -64,47 +64,14 @@ def ler_dataset(a, all_features = True):
 
     return features , labels
 
-def teste(model):
-    modelo = model
 
-    print('Treinando...')
-    modelo.fit(X,y)
-    previsoes = modelo.predict(val_treino)
-    acc = accuracy_score(labels_val, previsoes)
-    acuracia = acc  * 100
-    matriz_confusao = sklearn.metrics.confusion_matrix(labels_val, previsoes)
-
-    print('Matriz de confusao\n',matriz_confusao)
-    print(acuracia)
-
-    print('')
-
-def evaluate(params):
-    print('Parametros usados ', params)
-    modelo = SVC(kernel = params['kernel'],random_state = 42
-               ,gamma =params['gamma'])
-
-    print('Treinando...')
-    modelo.fit(X,y)
-    previsoes = modelo.predict(val_treino)
-    acc = accuracy_score(labels_val, previsoes)
-    acuracia = acc  * 100
-    matriz_confusao = sklearn.metrics.confusion_matrix(labels_val, previsoes)
-
-    print('Matriz de confusao',matriz_confusao)
-    print(acuracia)
-
-    print('')
-    
-    return {'loss': 1-acc, 'status': STATUS_OK}
-
-def organizar_dados(validacao_cruzada, train , test):
+def organizar_dados(validacao_cruzada, train , test, all_features = True):
     scaler = StandardScaler()
     teste = 0
     labels_teste = 0
     if validacao_cruzada :
-        features , labels = ler_dataset(train)
-        test_features , test_labels = ler_dataset(test)
+        features , labels = ler_dataset(train,all_features)
+        test_features , test_labels = ler_dataset(test,all_features)
 
         features = features + test_features
         labels = labels + test_labels
@@ -114,8 +81,8 @@ def organizar_dados(validacao_cruzada, train , test):
         features = scaler.transform(features)
         labels_treino = labels.astype('int')
     else:
-        features , labels = ler_dataset(train)
-        test_features , test_labels = ler_dataset(test)
+        features , labels = ler_dataset(train,all_features)
+        test_features , test_labels = ler_dataset(test,all_features)
         
         #normalizar
         scaler.fit(features)
@@ -125,11 +92,11 @@ def organizar_dados(validacao_cruzada, train , test):
         labels_teste = test_labels.astype('int')
     return features , teste, labels_treino, labels_teste   
     
-def validacao_cruzada(modelo,X,y, nome_arquivo):
+def validacao_cruzada(modelo,KFold,X,y, nome_arquivo):
     cont= 0
     acc = []
-    for train_index, test_index in kFold.split(X,y):
-        print(f"Validacao cruzada, foram {cont+1} de {n_splits}")
+    for train_index, test_index in KFold.split(X,y):
+        print(f"Validacao cruzada, foram {cont+1} de {5}")
 
         #----------------------------------------------------------------------------#
         X_train, X_test = X[train_index], X[test_index]
@@ -166,9 +133,11 @@ def validacao_cruzada(modelo,X,y, nome_arquivo):
         log = log + '\n\nPrecision: ' + str(precision)
         log = log + '\n\nRecall: ' + str(recall)
 
-
-        nome_log = nome_arquivo+'_Valicacao_Cruzada_'+str(modelo)+'.txt'
-        caminho_log = os.path.join('Testes', nome_arquivo , nome_log)
+        nome_modelo = str(modelo)
+        nome_modelo = nome_modelo[:3]
+        
+        nome_log = nome_arquivo+'_Valicacao_Cruzada_'+nome_modelo+'.txt'
+        caminho_log = os.path.join('..','Testes', nome_arquivo , nome_log)
         with open(caminho_log , 'a') as arquivo:
             arquivo.write(log);
         cont=cont + 1
@@ -188,8 +157,8 @@ def holdout(modelo, x_train,x_test,y_train, y_test,nome_arquivo):
     acc =[]
     #----------------------------------------------------------------------------#
 
-    modelo.fit(X_train,y_train)
-    previsoes = modelo.predict(X_test)
+    modelo.fit(x_train,y_train)
+    previsoes = modelo.predict(x_test)
     acuracia = accuracy_score(y_test, previsoes)
     matriz_confusao = sklearn.metrics.confusion_matrix(y_test, previsoes)
 
@@ -217,8 +186,11 @@ def holdout(modelo, x_train,x_test,y_train, y_test,nome_arquivo):
     log = log + '\n\nPrecision: ' + str(precision)
     log = log + '\n\nRecall: ' + str(recall)
 
-    nome_log = nome_arquivo+'_Holdout_'+str(modelo)+'.txt'
-    caminho_log = os.path.join('Testes', nome_arquivo , nome_log)
+    nome_modelo = str(modelo)
+    nome_modelo = nome_modelo[:3]
+
+    nome_log = nome_arquivo+'_Holdout_'+nome_modelo+'.txt'
+    caminho_log = os.path.join('..','Testes', nome_arquivo , nome_log)
     with open(caminho_log , 'a') as arquivo:
         arquivo.write(log);
 
