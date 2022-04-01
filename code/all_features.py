@@ -5,6 +5,7 @@ import numpy as np
 import sklearn as sk
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import StratifiedKFold
+from sklearn.preprocessing import StandardScaler
 
 from functions import ler_dataset, teste , evaluate, validacao_cruzada
 
