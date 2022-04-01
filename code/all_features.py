@@ -41,7 +41,7 @@ modelo_1 = xgb.XGBClassifier()
 modelo_2 = SVC()
 
 print("#--------------------------------------------------------#")
-# #TESTE_1
+#TESTE_1
 print("Teste_1 Holdout")
 print("Modelo = XGBClassifier")
 holdout(modelo_1,features, teste,labels_treino,labels_teste, nome_arquivo)
@@ -50,6 +50,10 @@ holdout(modelo_2,features, teste,labels_treino,labels_teste, nome_arquivo)
 
 print("#--------------------------------------------------------#")
 #TESTE_2
+
+vc = True
+features, teste , labels_treino, labels_teste = organizar_dados(vc ,train, test, all_features)
+
 
 X = features
 y = labels_treino

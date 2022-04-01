@@ -15,7 +15,7 @@ test =  pd.read_csv(os.path.join('..','Dataset','input','test.csv'))
 
 
 all_features = False
-vc = True
+vc = False
 
 SEED = 9305
 val_porcentagem = 0.20
@@ -44,6 +44,9 @@ holdout(modelo_2,features, teste,labels_treino,labels_teste, nome_arquivo)
 
 
 #TESTE_2
+
+vc = True
+features, teste , labels_treino, labels_teste = organizar_dados(vc ,train, test, all_features)
 
 X = features
 y = labels_treino

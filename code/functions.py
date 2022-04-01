@@ -68,13 +68,17 @@ def ler_dataset(a, all_features = True):
 def organizar_dados(validacao_cruzada, train , test, all_features = True):
     scaler = StandardScaler()
     teste = 0
-    labels_teste = 0
+    labels_test = 0
     if validacao_cruzada :
         features , labels = ler_dataset(train,all_features)
         test_features , test_labels = ler_dataset(test,all_features)
 
-        features = features + test_features
-        labels = labels + test_labels
+        #concatenando as tabelas
+        frame_features = [features , test_features]
+        frame_labels = [labels, test_labels]
+        
+        features = pd.concat(frame_features)
+        labels = pd.concat(frame_labels)
         
         #normalizar
         scaler.fit(features)
@@ -89,8 +93,9 @@ def organizar_dados(validacao_cruzada, train , test, all_features = True):
         features = scaler.transform(features)
         teste = scaler.transform(test_features)
         labels_treino = labels.astype('int')
-        labels_teste = test_labels.astype('int')
-    return features , teste, labels_treino, labels_teste   
+        labels_test = test_labels.astype('int')
+        
+    return features , teste, labels_treino, labels_test  
     
 def validacao_cruzada(modelo,KFold,X,y, nome_arquivo):
     cont= 0
