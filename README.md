@@ -7,7 +7,7 @@ Foram Feitos 4 teste com 2 modificações do dataset
 
 2 - dataset onde eu tiro todas as features que estao com valores nulos 
 
-3 - Nas direções cardinais onde o dataset informa a direção do vento eu dei um numero para cada direção.Com a logica que cada numero representa um numero e a junção das letras representaria apenas a concatenação dos numero
+3 - Nas direções cardeais onde o dataset informa a direção do vento, foi dado um numero para cada direção. Com a logica de que cada numero representa um numero e a junção das letras representaria apenas a concatenação dos numero.
 
 Exemplo 'N' = 8 e 'W' = 4 entao 'NW' = 48, 
 ficando assim
@@ -43,4 +43,4 @@ Encontrado em https://xgboost.readthedocs.io/en/stable/python/python_api.html
 
 # Testes
 
-Com todas as features consegui uma acuracia de 86% em todos os testes efetuados e na que eu tirei alguns features deu o mesmo resultado 86% com uma diferença muito baixa entre elas. Fiz dezenas de teste e essa foi a melhor resultado que eu obtive.
+Os testes efetivados com todas as features conseguiu alcança uma acuracia de 86%(a mais alto de todos os teste feitos) e na que foi tirada alguns features, deu o mesmo resultado 86%, com uma diferença muito baixa entre elas. Com isso concluimos que o tirar aquelas features que estavam com valores nulos não influenciou muito no resultado. Fiz dezenas de teste e essa foi a melhor resultado que eu obtive.
