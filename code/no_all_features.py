@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
-from functions import ler_dataset, teste , evaluate, validacao_cruzada
+from functions import ler_dataset, teste , organizar_dados, validacao_cruzada
 
 
 a = pd.read_csv(os.path.join('dataset','input','database.csv'))
@@ -17,35 +17,23 @@ a = pd.read_csv(os.path.join('dataset','input','database.csv'))
 train = pd.read_csv(os.path.join('train.csv'))
 test =  pd.read_csv(os.path.join('test.csv'))
 
-features , labels = ler_dataset(train)
-test_features , test_labels = ler_dataset(test)
-
+#------------------------------------------------------------------------------#
 ''' Pre-processamento'''
 
 
+vc = False
+
 SEED = 9305
-val_porcentagem = 0.25
+val_porcentagem = 0.20
+
+features, teste , labels_treino, labels_teste = organizar_dados(vc ,train, test)
 
 
-data_treino , val_treino, labels_treino,labels_val = train_test_split(features , labels,
-                                                        test_size = val_porcentagem,
-                                                        random_state = SEED)
-print(f'treino = {len(data_treino)}\nValidacao = {len(val_treino)}')
-
-
-#Normalizar 
-scaler = StandardScaler()
-scaler.fit(data_treino)
-data_treino = scaler.transform(data_treino)
-val_treino = scaler.transform(val_treino)
-
-labels_treino = labels_treino.astype('int')
-labels_val = labels_val.astype('int')
-
+#------------------------------------------------------------------------------#
 '''Treinamento'''
 
 
-X = data_treino
+X = features
 y = labels_treino
 
 n_splits = 5
@@ -61,3 +49,4 @@ modelo_2 = SVC()
 
 validacao_cruzada(modelo_1)
 validacao_cruzada(modelo_2)
+#------------------------------------------------------------------------------#

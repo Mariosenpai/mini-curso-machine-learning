@@ -19,14 +19,32 @@ test_features , test_labels = ler_dataset(test)
 ''' Pre-processamento'''
 
 
+validacao_cruzada = False
+
 SEED = 9305
-val_porcentagem = 0.25
+val_porcentagem = 0.20
 
+scaler = StandardScaler()
 
-data_treino , val_treino, labels_treino,labels_val = train_test_split(features , labels,
-                                                        test_size = val_porcentagem,
-                                                        random_state = SEED)
-print(f'treino = {len(data_treino)}\nValidacao = {len(val_treino)}')
+if validacao_cruzada :
+  features , labels = ler_dataset(train)
+  test_features , test_labels = ler_dataset(test)
+
+  features = features + test_features
+  labels = labels + test_labels
+
+  scaler.fit(features)
+  features = scaler.transform(features)
+  labels_treino = labels.astype('int')
+else:
+  features , labels = ler_dataset(train)
+  test_features , test_labels = ler_dataset(test)
+
+  scaler.fit(features)
+  features = scaler.transform(features)
+  teste = scaler.transform(test_features)
+  labels_treino = labels.astype('int')
+  labels_teste = test_labels.astype('int')
 
 
 #Normalizar 
