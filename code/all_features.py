@@ -15,6 +15,7 @@ test =  pd.read_csv(os.path.join('test.csv'))
 
 features , labels = ler_dataset(train)
 test_features , test_labels = ler_dataset(test)
+#------------------------------------------------------------------------------#
 
 ''' Pre-processamento'''
 
@@ -24,43 +25,15 @@ validacao_cruzada = False
 SEED = 9305
 val_porcentagem = 0.20
 
-scaler = StandardScaler()
-
-if validacao_cruzada :
-  features , labels = ler_dataset(train)
-  test_features , test_labels = ler_dataset(test)
-
-  features = features + test_features
-  labels = labels + test_labels
-
-  scaler.fit(features)
-  features = scaler.transform(features)
-  labels_treino = labels.astype('int')
-else:
-  features , labels = ler_dataset(train)
-  test_features , test_labels = ler_dataset(test)
-
-  scaler.fit(features)
-  features = scaler.transform(features)
-  teste = scaler.transform(test_features)
-  labels_treino = labels.astype('int')
-  labels_teste = test_labels.astype('int')
+features, teste , labels_treino, labels_teste = organizar_dados(vc ,train, test)
 
 
-#Normalizar 
-scaler = StandardScaler()
-scaler.fit(data_treino)
-data_treino = scaler.transform(data_treino)
-val_treino = scaler.transform(val_treino)
-
-labels_treino = labels_treino.astype('int')
-labels_val = labels_val.astype('int')
-
+#------------------------------------------------------------------------------#
 
 '''Treinamento'''
 
 
-X = data_treino
+X = features
 y = labels_treino
 
 n_splits = 5
@@ -76,3 +49,5 @@ modelo_2 = SVC()
 
 validacao_cruzada(modelo_1)
 validacao_cruzada(modelo_2)
+
+#------------------------------------------------------------------------------#
