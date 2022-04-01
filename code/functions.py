@@ -7,6 +7,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report
+
 from sklearn.svm import SVC
 
 
@@ -121,11 +123,9 @@ def organizar_dados(validacao_cruzada, train , test):
         teste = scaler.transform(test_features)
         labels_treino = labels.astype('int')
         labels_teste = test_labels.astype('int')
-    return features , teste, labels_treino, labels_teste
+    return features , teste, labels_treino, labels_teste   
     
-        
-
-def validacao_cruzada(modelo):
+def validacao_cruzada(modelo,X,y, nome_arquivo):
     cont= 0
     acc = []
     for train_index, test_index in kFold.split(X,y):
@@ -150,7 +150,7 @@ def validacao_cruzada(modelo):
         recall = sklearn.metrics.recall_score(y_test, previsoes)
         #------------------------------------------------------------------------------#
         '''salva o log'''
-
+        
         
         info = 'Validacao Cruzada - ' +str(cont) + ' de 5\n'
         classificacao_geral = classification_report(y_test, previsoes)
@@ -166,7 +166,8 @@ def validacao_cruzada(modelo):
         log = log + '\n\nPrecision: ' + str(precision)
         log = log + '\n\nRecall: ' + str(recall)
 
-        nome_log = 'no_all_features_Valicacao_Cruzada_'+str(modelo)+'.txt'
+
+        nome_log = nome_arquivo+'_Valicacao_Cruzada_'+str(modelo)+'.txt'
         caminho_log = os.path.join(nome_log)
         with open(caminho_log , 'a') as arquivo:
             arquivo.write(log);
@@ -183,8 +184,7 @@ def validacao_cruzada(modelo):
 
     return best_acc
 
-
-def holdout(modelo, x_train,x_test,y_train, y_test):    
+def holdout(modelo, x_train,x_test,y_train, y_test,nome_arquivo):    
     acc =[]
     #----------------------------------------------------------------------------#
 
@@ -217,7 +217,7 @@ def holdout(modelo, x_train,x_test,y_train, y_test):
     log = log + '\n\nPrecision: ' + str(precision)
     log = log + '\n\nRecall: ' + str(recall)
 
-    nome_log = 'Holdout_'+str(modelo)+'.txt'
+    nome_log = nome_arquivo+'_Holdout_'+str(modelo)+'.txt'
     caminho_log = os.path.join(nome_log)
     with open(caminho_log , 'a') as arquivo:
         arquivo.write(log);
