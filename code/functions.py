@@ -96,6 +96,35 @@ def evaluate(params):
     
     return {'loss': 1-acc, 'status': STATUS_OK}
 
+def organizar_dados(validacao_cruzada, train , test):
+    scaler = StandardScaler()
+    teste = 0
+    labels_teste = 0
+    if validacao_cruzada :
+        features , labels = ler_dataset(train)
+        test_features , test_labels = ler_dataset(test)
+
+        features = features + test_features
+        labels = labels + test_labels
+        
+        #normalizar
+        scaler.fit(features)
+        features = scaler.transform(features)
+        labels_treino = labels.astype('int')
+    else:
+        features , labels = ler_dataset(train)
+        test_features , test_labels = ler_dataset(test)
+        
+        #normalizar
+        scaler.fit(features)
+        features = scaler.transform(features)
+        teste = scaler.transform(test_features)
+        labels_treino = labels.astype('int')
+        labels_teste = test_labels.astype('int')
+    return features , teste, labels_treino, labels_teste
+    
+        
+
 def validacao_cruzada(modelo):
     cont= 0
     acc = []
@@ -153,6 +182,7 @@ def validacao_cruzada(modelo):
         arquivo.write(log);
 
     return best_acc
+
 
 def holdout(modelo, x_train,x_test,y_train, y_test):    
     acc =[]
