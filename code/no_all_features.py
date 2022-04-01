@@ -1,37 +1,49 @@
 import os
-import math
 import pandas as pd
 import numpy as np
-import sklearn 
-from sklearn.metrics import accuracy_score
 from sklearn.model_selection import StratifiedKFold
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
-from functions import ler_dataset, teste , organizar_dados, validacao_cruzada
+from functions import holdout, organizar_dados, validacao_cruzada
 
 
-a = pd.read_csv(os.path.join('dataset','input','database.csv'))
-
-train = pd.read_csv(os.path.join('train.csv'))
-test =  pd.read_csv(os.path.join('test.csv'))
+train = pd.read_csv(os.path.join('..','Dataset','input','train.csv'))
+test =  pd.read_csv(os.path.join('..','Dataset','input','test.csv'))
 
 #------------------------------------------------------------------------------#
 ''' Pre-processamento'''
 
 
+all_features = False
 vc = False
 
 SEED = 9305
 val_porcentagem = 0.20
 
-features, teste , labels_treino, labels_teste = organizar_dados(vc ,train, test)
+features, teste , labels_treino, labels_teste = organizar_dados(vc ,train, test,all_features)
 
 
 #------------------------------------------------------------------------------#
-'''Treinamento'''
+'''Treinamento
+    Sera feito 2 teste nesse arquivo primeiro todos com os 2 modelos
+    Teste_1 com o hold 
+    Teste_2 com a validação Cruzada
+'''
+nome_arquivo = "no_all_features"
 
+import xgboost as xgb
+modelo_1 = xgb.XGBClassifier()
+modelo_2 = SVC()
+
+#TESTE_1
+print("Teste_1 Holdout")
+print("Modelo = XGBClassifier")
+holdout(modelo_1,features, teste,labels_treino,labels_teste, nome_arquivo)
+print('Modelo = SVC')
+holdout(modelo_2,features, teste,labels_treino,labels_teste, nome_arquivo)
+
+
+#TESTE_2
 
 X = features
 y = labels_treino
@@ -42,11 +54,9 @@ kFold.get_n_splits(X, y)
 
 X = np.array(X)
 y = np.array(y)
-
-import xgboost as xgb
-modelo_1 = xgb.XGBClassifier()
-modelo_2 = SVC()
-
-validacao_cruzada(modelo_1)
-validacao_cruzada(modelo_2)
+print("Teste_1 Validacao cruzada")
+print("Modelo = XGBClassifier")
+validacao_cruzada(modelo_1,kFold,X,y,nome_arquivo)
+print('Modelo = SVC')
+validacao_cruzada(modelo_2,kFold,X,y,nome_arquivo)
 #------------------------------------------------------------------------------#
