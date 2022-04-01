@@ -16,7 +16,7 @@ test =  pd.read_csv(os.path.join('..','Dataset','input','test.csv'))
 ''' Pre-processamento'''
 
 
-all_features = False
+all_features = True
 vc = False
 
 SEED = 9305

@@ -15,7 +15,7 @@ test =  pd.read_csv(os.path.join('..','Dataset','input','test.csv'))
 
 
 all_features = False
-vc = False
+vc = True
 
 SEED = 9305
 val_porcentagem = 0.20
