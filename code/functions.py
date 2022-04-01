@@ -153,3 +153,50 @@ def validacao_cruzada(modelo):
         arquivo.write(log);
 
     return best_acc
+
+def holdout(modelo, x_train,x_test,y_train, y_test):    
+    acc =[]
+    #----------------------------------------------------------------------------#
+
+    modelo.fit(X_train,y_train)
+    previsoes = modelo.predict(X_test)
+    acuracia = accuracy_score(y_test, previsoes)
+    matriz_confusao = sklearn.metrics.confusion_matrix(y_test, previsoes)
+
+    # print('Matriz de confusao',matriz_confusao)
+    print('Acuracia : ',acuracia)
+    acc.append(acuracia)
+
+    f1 = sklearn.metrics.f1_score(y_test, previsoes)
+    precision = sklearn.metrics.precision_score(y_test, previsoes)
+    recall = sklearn.metrics.recall_score(y_test, previsoes)
+    #------------------------------------------------------------------------------#
+    '''salva o log'''
+
+    info = 'Holdout\n'
+    classificacao_geral = classification_report(y_test, previsoes)
+    print(classificacao_geral,'\n')
+    print('matriz de confusao:')
+    mc = sklearn.metrics.confusion_matrix(y_test, previsoes)
+    print(mc)
+    linha = '\n#-----------------------------------------------------#\n'
+    log = linha + info + classificacao_geral
+    log = log +'\nMatriz de confussao:\n' + str(mc)
+    log = log + '\n\n\nAcuracia: ' + str(acuracia)  
+    log = log + '\n\nF1_Score: ' + str(f1) 
+    log = log + '\n\nPrecision: ' + str(precision)
+    log = log + '\n\nRecall: ' + str(recall)
+
+    nome_log = 'Holdout_'+str(modelo)+'.txt'
+    caminho_log = os.path.join(nome_log)
+    with open(caminho_log , 'a') as arquivo:
+        arquivo.write(log);
+
+    best_acc = acc[0]
+    for i in acc:
+        if i > best_acc:
+            best_acc = i 
+    print('---------------------------------')
+    log = '\n'+linha+'\nMelhor acc : '+ str(best_acc)+'\n'+linha
+    with open(caminho_log , 'a') as arquivo:
+        arquivo.write(log);
