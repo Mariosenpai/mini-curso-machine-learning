@@ -168,7 +168,7 @@ def validacao_cruzada(modelo,X,y, nome_arquivo):
 
 
         nome_log = nome_arquivo+'_Valicacao_Cruzada_'+str(modelo)+'.txt'
-        caminho_log = os.path.join(nome_log)
+        caminho_log = os.path.join('Testes', nome_arquivo , nome_log)
         with open(caminho_log , 'a') as arquivo:
             arquivo.write(log);
         cont=cont + 1
@@ -218,7 +218,7 @@ def holdout(modelo, x_train,x_test,y_train, y_test,nome_arquivo):
     log = log + '\n\nRecall: ' + str(recall)
 
     nome_log = nome_arquivo+'_Holdout_'+str(modelo)+'.txt'
-    caminho_log = os.path.join(nome_log)
+    caminho_log = os.path.join('Testes', nome_arquivo , nome_log)
     with open(caminho_log , 'a') as arquivo:
         arquivo.write(log);
 
