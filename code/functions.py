@@ -7,6 +7,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report
+
 from sklearn.svm import SVC
 
 
@@ -62,45 +64,39 @@ def ler_dataset(a, all_features = True):
 
     return features , labels
 
-def teste(model):
-    modelo = model
 
-    print('Treinando...')
-    modelo.fit(X,y)
-    previsoes = modelo.predict(val_treino)
-    acc = accuracy_score(labels_val, previsoes)
-    acuracia = acc  * 100
-    matriz_confusao = sklearn.metrics.confusion_matrix(labels_val, previsoes)
+def organizar_dados(validacao_cruzada, train , test, all_features = True):
+    scaler = StandardScaler()
+    teste = 0
+    labels_teste = 0
+    if validacao_cruzada :
+        features , labels = ler_dataset(train,all_features)
+        test_features , test_labels = ler_dataset(test,all_features)
 
-    print('Matriz de confusao\n',matriz_confusao)
-    print(acuracia)
-
-    print('')
-
-def evaluate(params):
-    print('Parametros usados ', params)
-    modelo = SVC(kernel = params['kernel'],random_state = 42
-               ,gamma =params['gamma'])
-
-    print('Treinando...')
-    modelo.fit(X,y)
-    previsoes = modelo.predict(val_treino)
-    acc = accuracy_score(labels_val, previsoes)
-    acuracia = acc  * 100
-    matriz_confusao = sklearn.metrics.confusion_matrix(labels_val, previsoes)
-
-    print('Matriz de confusao',matriz_confusao)
-    print(acuracia)
-
-    print('')
+        features = features + test_features
+        labels = labels + test_labels
+        
+        #normalizar
+        scaler.fit(features)
+        features = scaler.transform(features)
+        labels_treino = labels.astype('int')
+    else:
+        features , labels = ler_dataset(train,all_features)
+        test_features , test_labels = ler_dataset(test,all_features)
+        
+        #normalizar
+        scaler.fit(features)
+        features = scaler.transform(features)
+        teste = scaler.transform(test_features)
+        labels_treino = labels.astype('int')
+        labels_teste = test_labels.astype('int')
+    return features , teste, labels_treino, labels_teste   
     
-    return {'loss': 1-acc, 'status': STATUS_OK}
-
-def validacao_cruzada(modelo):
+def validacao_cruzada(modelo,KFold,X,y, nome_arquivo):
     cont= 0
     acc = []
-    for train_index, test_index in kFold.split(X,y):
-        print(f"Validacao cruzada, foram {cont+1} de {n_splits}")
+    for train_index, test_index in KFold.split(X,y):
+        print(f"Validacao cruzada, foram {cont+1} de {5}")
 
         #----------------------------------------------------------------------------#
         X_train, X_test = X[train_index], X[test_index]
@@ -121,7 +117,7 @@ def validacao_cruzada(modelo):
         recall = sklearn.metrics.recall_score(y_test, previsoes)
         #------------------------------------------------------------------------------#
         '''salva o log'''
-
+        
         
         info = 'Validacao Cruzada - ' +str(cont) + ' de 5\n'
         classificacao_geral = classification_report(y_test, previsoes)
@@ -137,8 +133,11 @@ def validacao_cruzada(modelo):
         log = log + '\n\nPrecision: ' + str(precision)
         log = log + '\n\nRecall: ' + str(recall)
 
-        nome_log = 'no_all_features_Valicacao_Cruzada_'+str(modelo)+'.txt'
-        caminho_log = os.path.join(nome_log)
+        nome_modelo = str(modelo)
+        nome_modelo = nome_modelo[:3]
+        
+        nome_log = nome_arquivo+'_Valicacao_Cruzada_'+nome_modelo+'.txt'
+        caminho_log = os.path.join('..','Testes', nome_arquivo , nome_log)
         with open(caminho_log , 'a') as arquivo:
             arquivo.write(log);
         cont=cont + 1
@@ -153,3 +152,53 @@ def validacao_cruzada(modelo):
         arquivo.write(log);
 
     return best_acc
+
+def holdout(modelo, x_train,x_test,y_train, y_test,nome_arquivo):    
+    acc =[]
+    #----------------------------------------------------------------------------#
+
+    modelo.fit(x_train,y_train)
+    previsoes = modelo.predict(x_test)
+    acuracia = accuracy_score(y_test, previsoes)
+    matriz_confusao = sklearn.metrics.confusion_matrix(y_test, previsoes)
+
+    # print('Matriz de confusao',matriz_confusao)
+    print('Acuracia : ',acuracia)
+    acc.append(acuracia)
+
+    f1 = sklearn.metrics.f1_score(y_test, previsoes)
+    precision = sklearn.metrics.precision_score(y_test, previsoes)
+    recall = sklearn.metrics.recall_score(y_test, previsoes)
+    #------------------------------------------------------------------------------#
+    '''salva o log'''
+
+    info = 'Holdout\n'
+    classificacao_geral = classification_report(y_test, previsoes)
+    print(classificacao_geral,'\n')
+    print('matriz de confusao:')
+    mc = sklearn.metrics.confusion_matrix(y_test, previsoes)
+    print(mc)
+    linha = '\n#-----------------------------------------------------#\n'
+    log = linha + info + classificacao_geral
+    log = log +'\nMatriz de confussao:\n' + str(mc)
+    log = log + '\n\n\nAcuracia: ' + str(acuracia)  
+    log = log + '\n\nF1_Score: ' + str(f1) 
+    log = log + '\n\nPrecision: ' + str(precision)
+    log = log + '\n\nRecall: ' + str(recall)
+
+    nome_modelo = str(modelo)
+    nome_modelo = nome_modelo[:3]
+
+    nome_log = nome_arquivo+'_Holdout_'+nome_modelo+'.txt'
+    caminho_log = os.path.join('..','Testes', nome_arquivo , nome_log)
+    with open(caminho_log , 'a') as arquivo:
+        arquivo.write(log);
+
+    best_acc = acc[0]
+    for i in acc:
+        if i > best_acc:
+            best_acc = i 
+    print('---------------------------------')
+    log = '\n'+linha+'\nMelhor acc : '+ str(best_acc)+'\n'+linha
+    with open(caminho_log , 'a') as arquivo:
+        arquivo.write(log);
